@@ -26,12 +26,12 @@ import "fmt"
 // "multiplication" and "xor" operations (128, 256, 512 and 1024 bits). The trick is that you need
 // to propagate carries between the multiple uint64 variables that simulate a big unsigned int ;-)
 
-func FNV1a_32(inputdata *[]byte) [4]byte {
+func FNV1a_32(inputdata []byte) []byte {
 	var val uint32 = 2166136261 // offset_basis = 2166136261
-	var hash [4]byte            // Little Endian Hash value
 	var i uint
+	hash := make([]byte, 4) // Little Endian Hash value
 
-	for _, v := range *inputdata {
+	for _, v := range inputdata {
 		// xor the bottom with the current octet
 		val ^= uint32(v)
 		// multiply by the 32 bit FNV magic prime mod 2^32
@@ -54,12 +54,12 @@ func FNV1a_32(inputdata *[]byte) [4]byte {
 	// can be created here: http://find.fnvhash.com/
 }
 
-func FNV1a_64(inputdata *[]byte) [8]byte {
+func FNV1a_64(inputdata []byte) []byte {
 	var val uint64 = 14695981039346656037 // offset_basis = 14695981039346656037
-	var hash [8]byte                      // Little Endian Hash value
 	var i uint
+	hash := make([]byte, 8) // Little Endian Hash value
 
-	for _, v := range *inputdata {
+	for _, v := range inputdata {
 		// xor the bottom with the current octet
 		val ^= uint64(v)
 
@@ -83,18 +83,18 @@ func FNV1a_64(inputdata *[]byte) [8]byte {
 	// can be created here: http://find.fnvhash.com/
 }
 
-func FNV1a_128(inputdata *[]byte) [16]byte {
+func FNV1a_128(inputdata []byte) []byte {
 	// offset_basis = 144066263297769815596495629667062367629
 	// 				= 0x6C62272E 07BB0142 62B82175 6295C58D
 	// Convert offset_basis into a base 2^32 array
 	var val = [4]uint64{0x6295C58D, 0x62B82175, 0x07BB0142, 0x6C62272E}
-	var tmp [4]uint64 // tmp 128 bit value
-	var hash [16]byte // Little Endian Hash value
+	var tmp [4]uint64        // tmp 128 bit value
+	hash := make([]byte, 16) // Little Endian Hash value
 
 	const FNV_128_PRIME_LOW = 0x0000013B
 	const FNV_128_PRIME_SHIFT = 24
 
-	for _, v := range *inputdata {
+	for _, v := range inputdata {
 		// xor the bottom with the current octet
 		val[0] ^= uint64(v)
 
@@ -145,19 +145,19 @@ func FNV1a_128(inputdata *[]byte) [16]byte {
 	// can be created here: http://find.fnvhash.com/
 }
 
-func FNV1a_256(inputdata *[]byte) [32]byte {
+func FNV1a_256(inputdata []byte) []byte {
 	// offset_basis = 100029257958052580907070968620625704837092796014241193945225284501741471925557
 	// 				= 0xDD268DBC AAC55036 2D98C384 C4E576CC C8B15368 47B6BBB3 1023B4C8 CAEE0535
 	// Convert offset_basis into a base 2^32 array
 	var val = [8]uint64{0xCAEE0535, 0x1023B4C8, 0x47B6BBB3, 0xC8B15368,
 		0xC4E576CC, 0x2D98C384, 0xAAC55036, 0xDD268DBC}
-	var tmp [8]uint64 // tmp 256 bit value
-	var hash [32]byte // Little Endian Hash value
+	var tmp [8]uint64        // tmp 256 bit value
+	hash := make([]byte, 32) // Little Endian Hash value
 
 	const FNV_256_PRIME_LOW = 0x00000163
 	const FNV_256_PRIME_SHIFT = 8
 
-	for _, v := range *inputdata {
+	for _, v := range inputdata {
 		// xor the bottom with the current octet
 		val[0] ^= uint64(v)
 		// multiply by the lowest order digit base 2^32 and by the other non-zero digit
@@ -198,7 +198,7 @@ func FNV1a_256(inputdata *[]byte) [32]byte {
 	// can be created here: http://find.fnvhash.com/
 }
 
-func FNV1a_512(inputdata *[]byte) [64]byte {
+func FNV1a_512(inputdata []byte) []byte {
 	// offset_basis = 9659303129496669498009435400716310466090418745672637896108374329434462657994582932197716438449813051892206539805784495328239340083876191928701583869517785 (decimal)
 	// 				= 0xB86DB0B1 171F4416 DCA1E50F 309990AC AC87D059 C9000000 00000000 00000D21
 	// 				    E948F68A 34C192F6 2EA79BC9 42DBE7CE 18203641 5F56E34B AC982AAC 4AFE9FD9
@@ -207,13 +207,13 @@ func FNV1a_512(inputdata *[]byte) [64]byte {
 		0x42DBE7CE, 0x2EA79BC9, 0x34C192F6, 0xE948F68A,
 		0x00000D21, 0x00000000, 0xC9000000, 0xAC87D059,
 		0x309990AC, 0xDCA1E50F, 0x171F4416, 0xB86DB0B1}
-	var tmp [16]uint64 // tmp 512 bit value
-	var hash [64]byte  // Little Endian Hash value
+	var tmp [16]uint64       // tmp 512 bit value
+	hash := make([]byte, 64) // Little Endian Hash value
 
 	const FNV_512_PRIME_LOW = 0x0000000000000157
 	const FNV_512_PRIME_SHIFT = 24
 
-	for _, v := range *inputdata {
+	for _, v := range inputdata {
 		// xor the bottom hash with the current octet
 		val[0] ^= uint64(v)
 
@@ -258,7 +258,7 @@ func FNV1a_512(inputdata *[]byte) [64]byte {
 	// can be created here: http://find.fnvhash.com/
 }
 
-func FNV1a_1024(inputdata *[]byte) [128]byte {
+func FNV1a_1024(inputdata []byte) []byte {
 	// offset_basis = 14197795064947621068722070641403218320880622795441933960878474914617582723252296
 	// 				  73230371772215086409652120235554936562817466910857181476047101507614802975596980
 	// 				  40773201576924585630032153049571501574036444603635505054127112859663616102678680
@@ -276,13 +276,13 @@ func FNV1a_1024(inputdata *[]byte) [128]byte {
 		0x00000000, 0x9A21D900, 0xDA3674DA, 0x6C3BF34E,
 		0x23FDADA1, 0x4B29FC42, 0x591028B7, 0x32E56D5A,
 		0x758ECC4D, 0x005F7A76, 0x00000000, 0x00000000}
-	var tmp [32]uint64 // tmp 1024 bit value
-	var hash [128]byte // Little Endian Hash value
+	var tmp [32]uint64        // tmp 1024 bit value
+	hash := make([]byte, 128) // Little Endian Hash value
 
 	const FNV_1024_PRIME_LOW = 0x0000018D
 	const FNV_1024_PRIME_SHIFT = 8
 
-	for _, v := range *inputdata {
+	for _, v := range inputdata {
 		// xor the bottom hash with the current octet
 		val[0] ^= uint64(v)
 
@@ -343,18 +343,18 @@ func main() {
 	data2 := []byte{'I', ' ', 'a', 'm', ' ', 'a', ' ', 'g', 'o', 'p', 'h', 'e', 'r', '!'}
 
 	fmt.Printf("\ndata[%v bytes] = \"hello world!goodbye!\"\n\n", len(data1))
-	fmt.Printf("FNV1a_32   = %x\n\n", FNV1a_32(&data1))
-	fmt.Printf("FNV1a_64   = %x\n\n", FNV1a_64(&data1))
-	fmt.Printf("FNV1a_128  = %x\n\n", FNV1a_128(&data1))
-	fmt.Printf("FNV1a_256  = %x\n\n", FNV1a_256(&data1))
-	fmt.Printf("FNV1a_512  = %x\n\n", FNV1a_512(&data1))
-	fmt.Printf("FNV1a_1024 = %x\n\n", FNV1a_1024(&data1))
+	fmt.Printf("FNV1a_32   = %x\n\n", FNV1a_32(data1))
+	fmt.Printf("FNV1a_64   = %x\n\n", FNV1a_64(data1))
+	fmt.Printf("FNV1a_128  = %x\n\n", FNV1a_128(data1))
+	fmt.Printf("FNV1a_256  = %x\n\n", FNV1a_256(data1))
+	fmt.Printf("FNV1a_512  = %x\n\n", FNV1a_512(data1))
+	fmt.Printf("FNV1a_1024 = %x\n\n", FNV1a_1024(data1))
 
 	fmt.Printf("data[%v bytes] = \"I am a gopher!\"\n\n", len(data2))
-	fmt.Printf("FNV1a_32   = %x\n\n", FNV1a_32(&data2))
-	fmt.Printf("FNV1a_64   = %x\n\n", FNV1a_64(&data2))
-	fmt.Printf("FNV1a_128  = %x\n\n", FNV1a_128(&data2))
-	fmt.Printf("FNV1a_256  = %x\n\n", FNV1a_256(&data2))
-	fmt.Printf("FNV1a_512  = %x\n\n", FNV1a_512(&data2))
-	fmt.Printf("FNV1a_1024 = %x\n\n", FNV1a_1024(&data2))
+	fmt.Printf("FNV1a_32   = %x\n\n", FNV1a_32(data2))
+	fmt.Printf("FNV1a_64   = %x\n\n", FNV1a_64(data2))
+	fmt.Printf("FNV1a_128  = %x\n\n", FNV1a_128(data2))
+	fmt.Printf("FNV1a_256  = %x\n\n", FNV1a_256(data2))
+	fmt.Printf("FNV1a_512  = %x\n\n", FNV1a_512(data2))
+	fmt.Printf("FNV1a_1024 = %x\n\n", FNV1a_1024(data2))
 }
